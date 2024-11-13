@@ -92,4 +92,61 @@ public class TodoController : ControllerBase
             return [];
         }
     }
+
+    /// <summary>
+    /// Atualiza um Todo
+    /// </summary>
+    /// <param name="id"></param>
+    /// <param name="todoDto"></param>
+    /// <returns>IActionResult</returns>
+    [HttpPut("{id}")]
+    public IActionResult UpdateTodo(int id, [FromBody] UpdateTodoDto todoDto)
+    {
+        try
+        {
+            var todo = _todoContext.Todos.FirstOrDefault(todo => todo.Id == id);
+
+            if(todo == null)
+            {
+                return NotFound(); 
+            }
+            
+            _mapper.Map(todoDto, todo); 
+            _todoContext.SaveChanges();
+
+            return NoContent();
+        }
+        catch (Exception ex)
+        {
+            return StatusCode(500, ex.Message);
+        } 
+    }
+
+    /// <summary>
+    /// Check um Todo - altera a flag
+    /// </summary>
+    /// <param name="id"></param>
+    /// <returns>IActionResult</returns>
+    [HttpPatch("{id}")]
+    public IActionResult CheckTodo(int id) 
+    {
+        try
+        {
+            var todo = _todoContext.Todos.FirstOrDefault(todo => todo.Id == id);
+
+            if (todo == null)
+            {
+                return NotFound();
+            }
+
+            todo.IsComplete = !todo.IsComplete;
+            _todoContext.SaveChanges();
+
+            return NoContent();
+        }
+        catch (Exception ex) 
+        {
+            return StatusCode(500, ex.Message);
+        }
+    }
 }
