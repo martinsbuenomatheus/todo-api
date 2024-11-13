@@ -23,7 +23,7 @@ jobs:
           include-prerelease: true
 
       - name: Build with dotnet
-        working-directory: todo-api/TodoApi
+        working-directory: TodoApi
         run: dotnet build --configuration Release
 
       - name: dotnet publish
