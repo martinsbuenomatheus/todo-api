@@ -1,5 +1,6 @@
 ﻿using AutoMapper;
 using Microsoft.AspNetCore.Mvc;
+using Microsoft.EntityFrameworkCore;
 using TodoApi.Data;
 using TodoApi.Data.Dto;
 using TodoApi.Models;
@@ -140,6 +141,34 @@ public class TodoController : ControllerBase
             }
 
             todo.IsComplete = !todo.IsComplete;
+            _todoContext.SaveChanges();
+
+            return NoContent();
+        }
+        catch (Exception ex) 
+        {
+            return StatusCode(500, ex.Message);
+        }
+    }
+
+    /// <summary>
+    /// Deleta um Todo, por ID
+    /// </summary>
+    /// <param name="id"></param>
+    /// <returns>IActionResult</returns>
+    [HttpDelete("{id}")]
+    public IActionResult DeleteTodo(int id)
+    {
+        try
+        {
+            var todo = _todoContext.Todos.FirstOrDefault(todo => todo.Id == id);
+
+            if (todo == null)
+            {
+                return NotFound();
+            }
+
+            _todoContext.Remove(todo);
             _todoContext.SaveChanges();
 
             return NoContent();
