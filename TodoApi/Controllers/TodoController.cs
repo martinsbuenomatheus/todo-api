@@ -1,4 +1,5 @@
 ﻿using AutoMapper;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 using TodoApi.Data;
@@ -8,6 +9,7 @@ using TodoApi.Models;
 namespace TodoApi.Controllers;
 
 [ApiController]
+[Authorize]
 [Route("[controller]")]
 public class TodoController : ControllerBase
 {
