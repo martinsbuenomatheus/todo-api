@@ -9,6 +9,8 @@ public class TodoProfile : Profile
     public TodoProfile() 
     {
         CreateMap<CreateTodoDto, Todo>();
+        CreateMap<UpdateTodoDto, Todo>();
         CreateMap<Todo, ReadTodoDto>();
+        CreateMap<Todo, UpdateTodoDto>();
     }
 }

@@ -20,20 +20,28 @@ public class TodoController : ControllerBase
     }
 
     /// <summary>
-    /// 
+    /// Cria um item ToDo
     /// </summary>
-    /// <param name=""></param>
+    /// <param name="todoDto"></param>
     /// <returns>IActionResult</returns>
     [HttpPost]
     [ProducesResponseType(StatusCodes.Status201Created)]
     public IActionResult CreateTodo([FromBody] CreateTodoDto todoDto)
     {
-        Todo todo = _mapper.Map<Todo>(todoDto);
+        try
+        {
 
-        _todoContext.Add(todo);
-        _todoContext.SaveChanges();
+            Todo todo = _mapper.Map<Todo>(todoDto);
 
-        return CreatedAtAction(nameof(GetTodoById), new { todo.Id }, todo);
+            _todoContext.Add(todo);
+            _todoContext.SaveChanges();
+
+            return CreatedAtAction(nameof(GetTodoById), new { todo.Id }, todo);
+        }
+        catch (Exception ex) 
+        {
+            return StatusCode(500, ex.Message);
+        }
     }
 
     /// <summary>
@@ -44,14 +52,44 @@ public class TodoController : ControllerBase
     [HttpGet("{id}")]
     public IActionResult GetTodoById(int id)
     {
-        var todo = _todoContext.Todos.FirstOrDefault(filme => filme.Id == id);
-        if (todo == null)
+        try
         {
-            return NotFound();
+            var todo = _todoContext.Todos.FirstOrDefault(filme => filme.Id == id);
+            if (todo == null)
+            {
+                return NotFound();
+            }
+
+            var todoDto = _mapper.Map<ReadTodoDto>(todo);
+
+            return Ok(todoDto);
         }
+        catch (Exception ex) 
+        {
+            return StatusCode(500, ex.Message);
+        }   
+    }
 
-        var todoDto = _mapper.Map<ReadTodoDto>(todo);
+    /// <summary>
+    /// Busca Todos, paginado
+    /// </summary>
+    /// <param name="page">Pagina</param>
+    /// <param name="take">Quantidade de itens</param>
+    /// <returns>IActionResult</returns>
+    [HttpGet]
+    public IEnumerable<ReadTodoDto> GetTodo([FromQuery] int page = 1, [FromQuery] int take = 10)
+    {
+        try
+        {
+            // Offset de paginação
+            var skip = (page * take) - take;
 
-        return Ok(todoDto);
+            return _mapper.Map<List<ReadTodoDto>>(_todoContext.Todos.Skip(skip).Take(take));
+        }
+        catch (Exception ex)
+        {
+            Console.WriteLine(ex.Message);
+            return [];
+        }
     }
 }
