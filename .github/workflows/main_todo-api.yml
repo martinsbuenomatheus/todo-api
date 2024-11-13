@@ -27,6 +27,7 @@ jobs:
         run: dotnet build --configuration Release
 
       - name: dotnet publish
+        working-directory: TodoApi
         run: dotnet publish -c Release -o ./publish
 
       - name: Upload artifact for deployment job
